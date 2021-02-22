@@ -8,12 +8,6 @@ RUN apt-get update -qq && apt-get install -y build-essential libpq-dev nodejs li
 RUN mkdir /myapp
 WORKDIR /myapp
 
-# Copy the Gemfile and Gemfile.lock from app root directory into the /myapp/ folder in the docker container
-COPY Gemfile /myapp/Gemfile
-COPY Gemfile.lock /myapp/Gemfile.lock
-
-# Run bundle install to install gems inside the gemfile
-RUN bundle install
 
 # Install Yarn.
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg -o /root/yarn-pubkey.gpg && apt-key add /root/yarn-pubkey.gpg
@@ -24,4 +18,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends nodejs yarn
 COPY . /myapp
 
 # Run yarn install to install JavaScript dependencies.
+RUN rm -rf /myapp/yarn.lock
+RUN rm -rf yarn.lock
 RUN yarn install --check-files
+
+# Copy the Gemfile and Gemfile.lock from app root directory into the /myapp/ folder in the docker container
+COPY Gemfile /myapp/Gemfile
+COPY Gemfile.lock /myapp/Gemfile.lock
+
+# Run bundle install to install gems inside the gemfile
+RUN bundle install
